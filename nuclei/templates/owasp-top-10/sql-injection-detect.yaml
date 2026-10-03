@@ -1,0 +1,29 @@
+id: sql-injection-detect
+info:
+  name: SQL Injection Error Pattern Detection
+  author: security-team
+  severity: critical
+  description: Detects SQL error messages and syntax breaks in web response bodies.
+  reference:
+    - https://owasp.org/www-community/attacks/SQL_Injection
+  tags: sqli,injection,owasp-top-10,database
+  remediation: Use prepared statements and parameterized queries for all database interactions.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/?id=1'"
+      - "{{BaseURL}}/api/search?q=1'%20OR%20'1'='1"
+      - "{{BaseURL}}/api/users/1'"
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "You have an error in your SQL syntax"
+          - "Warning: mysql_"
+          - "PostgreSQL query failed"
+          - "SQLite3::SQLException"
+          - "Unclosed quotation mark before the character string"
+          - "ORA-01756"
+          - "operational error: no such column"

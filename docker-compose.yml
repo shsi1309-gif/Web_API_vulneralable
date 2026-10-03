@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  scanner:
+    build: .
+    container_name: vulnerability-scanner
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://scanner_user:scanner_pass@postgres:5432/scanner_db
+      - DEBUG=False
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./reports:/app/reports
+      - ./nuclei/templates:/app/nuclei/templates
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: scanner-postgres
+    environment:
+      - POSTGRES_USER=scanner_user
+      - POSTGRES_PASSWORD=scanner_pass
+      - POSTGRES_DB=scanner_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scanner_user -d scanner_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

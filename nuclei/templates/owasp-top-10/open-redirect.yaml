@@ -1,0 +1,32 @@
+id: open-redirect-detect
+info:
+  name: Open URL Redirection Detection
+  author: security-team
+  severity: medium
+  description: Checks if unvalidated redirect parameters forward users to external attacker domains.
+  reference:
+    - https://cwe.mitre.org/data/definitions/601.html
+  tags: redirect,ssrf,owasp-top-10
+  remediation: Enforce strict whitelist of allowed internal redirect routes.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/redirect?url=https://example.com/nuclei-probe"
+      - "{{BaseURL}}/login?next=https://example.com/nuclei-probe"
+      - "{{BaseURL}}/out?target=//example.com/nuclei-probe"
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: header
+        regex:
+          - "Location: https?://example\\.com/nuclei-probe"
+          - "Location: //example\\.com/nuclei-probe"
+        condition: or
+      - type: status
+        status:
+          - 301
+          - 302
+          - 303
+          - 307
+          - 308

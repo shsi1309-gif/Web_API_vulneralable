@@ -1,0 +1,27 @@
+id: lfi-path-traversal
+info:
+  name: Local File Inclusion & Directory Traversal
+  author: security-team
+  severity: critical
+  description: Detects arbitrary system file reads via path traversal payloads.
+  reference:
+    - https://owasp.org/www-community/attacks/Path_Traversal
+  tags: lfi,traversal,owasp-top-10
+  remediation: Canonicalize paths and ensure requested files are contained within authorized root directory.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/?file=../../../../etc/passwd"
+      - "{{BaseURL}}/?page=../../../../etc/passwd"
+      - "{{BaseURL}}/?doc=../../../../etc/passwd"
+      - "{{BaseURL}}/api/download?path=../../../../etc/passwd"
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "root:.*?:0:0:"
+      - type: status
+        status:
+          - 200

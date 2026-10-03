@@ -1,0 +1,31 @@
+id: swagger-api-exposed
+info:
+  name: Swagger / OpenAPI UI & Schema Public Exposure
+  author: security-team
+  severity: low
+  description: Detects publicly exposed Swagger UI or OpenAPI documentation that may disclose internal endpoints and schemas.
+  reference:
+    - https://cwe.mitre.org/data/definitions/200.html
+  tags: api,swagger,openapi,recon
+  remediation: Restrict OpenAPI docs and Swagger UI behind authentication or internal VPN access.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/openapi.json"
+      - "{{BaseURL}}/swagger.json"
+      - "{{BaseURL}}/docs"
+      - "{{BaseURL}}/swagger-ui.html"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - '"openapi":'
+          - '"swagger":'
+          - "swagger-ui"
+          - "<title>Swagger UI</title>"
+        condition: or
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity - Automated Web & API Vulnerability Scanner</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div>
+                <div class="brand">
+                    <div class="brand-icon">🛡️</div>
+                    <div>
+                        <div class="brand-title">Antigravity Sec</div>
+                        <span class="brand-version">v2.0 PRO</span>
+                    </div>
+                </div>
+
+                <div class="nav-section-title">Operations</div>
+                <ul class="nav-links">
+                    <li class="nav-item active" data-tab="dashboard">
+                        <span>📊</span> Dashboard
+                    </li>
+                    <li class="nav-item" data-tab="scans">
+                        <span>⚡</span> Scans & Console
+                        <span class="nav-item-badge" id="active-scans-badge" style="display: none;">0</span>
+                    </li>
+                    <li class="nav-item" data-tab="triage">
+                        <span>🛡️</span> Vulnerabilities
+                        <span class="nav-item-badge" id="open-findings-badge">0</span>
+                    </li>
+                    <li class="nav-item" data-tab="endpoints">
+                        <span>🌐</span> API & Endpoints
+                    </li>
+                </ul>
+
+                <div class="nav-section-title" style="margin-top: 14px;">Automation & Tools</div>
+                <ul class="nav-links">
+                    <li class="nav-item" data-tab="templates">
+                        <span>🧪</span> Nuclei Templates
+                    </li>
+                    <li class="nav-item" data-tab="reports">
+                        <span>📑</span> Executive Reports
+                    </li>
+                    <li class="nav-item" data-tab="testlab">
+                        <span>🎯</span> Test Target Lab
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div>
+                    <span class="status-dot"></span>
+                    <span id="system-status-text">Engine Online</span>
+                </div>
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">FASTAPI+NUCLEI</span>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <!-- Top Header Bar with Quick Launcher -->
+            <header class="topbar">
+                <div class="quick-scan-bar">
+                    <div class="input-target-wrapper">
+                        <span class="prefix-icon">🎯</span>
+                        <input type="text" id="quick-target-url" placeholder="Enter target URL (e.g. http://localhost:8888 or https://example.com)..." />
+                    </div>
+                    <select id="quick-profile" class="select-profile">
+                        <option value="FULL">⚡ Full Security Audit</option>
+                        <option value="OWASP_TOP_10">🛡️ OWASP Top 10 Suite</option>
+                        <option value="API_SECURITY">🔑 REST & GraphQL API Security</option>
+                        <option value="NUCLEI_ONLY">🧬 Nuclei Templates Only</option>
+                        <option value="QUICK_HEADERS">🚀 Quick Headers & SSL Audit</option>
+                        <option value="RECON_ONLY">🔍 Reconnaissance & Discovery</option>
+                    </select>
+                    <button class="btn btn-primary" id="btn-quick-scan">
+                        <span>🚀</span> Launch Scan
+                    </button>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" id="btn-open-advanced-modal">
+                        <span>⚙️</span> Advanced Options
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Tab Views Viewport -->
+            <main class="content-viewport">
+                <!-- 1. DASHBOARD VIEW -->
+                <section id="view-dashboard" class="tab-view active">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Vulnerability Intelligence Dashboard</h1>
+                            <p class="page-desc">Real-time attack surface discovery, OWASP Top 10 auditing, and risk metrics.</p>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" id="btn-refresh-dashboard">🔄 Refresh</button>
+                    </div>
+
+                    <!-- Metrics Cards Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card crit">
+                            <div class="stat-card-header">
+                                <span class="stat-label">Critical Findings</span>
+                                <span class="stat-icon">🔥</span>
+                            </div>
+                            <div class="stat-value" id="stat-critical" style="color: #F87171;">0</div>
+                            <div class="stat-sub">Immediate remediation required</div>
+                        </div>
+
+                        <div class="stat-card high">
+                            <div class="stat-card-header">
+                                <span class="stat-label">High Severity</span>
+                                <span class="stat-icon">⚠️</span>
+                            </div>
+                            <div class="stat-value" id="stat-high" style="color: #FB923C;">0</div>
+                            <div class="stat-sub">Exploitable vulnerabilities</div>
+                        </div>
+
+                        <div class="stat-card med">
+                            <div class="stat-card-header">
+                                <span class="stat-label">Medium Severity</span>
+                                <span class="stat-icon">⚡</span>
+                            </div>
+                            <div class="stat-value" id="stat-medium" style="color: #FBBF24;">0</div>
+                            <div class="stat-sub">Security weaknesses & misconfigs</div>
+                        </div>
+
+                        <div class="stat-card low">
+                            <div class="stat-card-header">
+                                <span class="stat-label">Low & Info</span>
+                                <span class="stat-icon">ℹ️</span>
+                            </div>
+                            <div class="stat-value" id="stat-low-info" style="color: #60A5FA;">0</div>
+                            <div class="stat-sub">Information disclosures</div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-card-header">
+                                <span class="stat-label">Total Audits</span>
+                                <span class="stat-icon">🎯</span>
+                            </div>
+                            <div class="stat-value" id="stat-total-scans">0</div>
+                            <div class="stat-sub">Scans completed</div>
+                        </div>
+                    </div>
+
+                    <!-- Panels Grid -->
+                    <div class="panels-grid">
+                        <!-- Recent Scans Panel -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title"><span>🕒</span> Recent Security Scans</div>
+                                <button class="btn btn-secondary btn-sm" onclick="app.switchTab('scans')">View All</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="cyber-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Target URL</th>
+                                            <th>Profile</th>
+                                            <th>Status</th>
+                                            <th>Findings</th>
+                                            <th>Risk Score</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboard-recent-scans-body">
+                                        <tr>
+                                            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                                No scans launched yet. Enter a target URL above to start!
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Scan Profiles Quick Launcher -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title"><span>🚀</span> Recommended Profiles</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                                    <div style="font-weight: 600; font-size: 13.5px; color: var(--accent-cyan);">⚡ Full Security Audit</div>
+                                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Crawl + Built-in OWASP checks + Nuclei templates</div>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                                    <div style="font-weight: 600; font-size: 13.5px; color: #38BDF8;">🔑 REST & GraphQL API Scan</div>
+                                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">BOLA/IDOR, JWT alg bypass, PII leaks, rate limiting</div>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                                    <div style="font-weight: 600; font-size: 13.5px; color: #A78BFA;">🧬 Nuclei Template Suite</div>
+                                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Executes custom YAML templates natively</div>
+                                </div>
+                                <button class="btn btn-secondary" onclick="app.launchDemoTargetScan()" style="width: 100%; margin-top: 6px;">
+                                    <span>🎯</span> Scan Demo Target Lab
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. SCANS & CONSOLE VIEW -->
+                <section id="view-scans" class="tab-view">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Scan Operations & Live Terminal</h1>
+                            <p class="page-desc">Track active background audits, inspect live execution logs, and manage scan jobs.</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-new-scan-trigger"><span>+</span> New Scan</button>
+                    </div>
+
+                    <!-- Active Scan Monitor Card (Hidden when idle) -->
+                    <div id="active-scan-monitor" class="panel" style="margin-bottom: 24px; display: none;">
+                        <div class="panel-header">
+                            <div class="panel-title">
+                                <span class="status-dot"></span>
+                                <span>Active Scan in Progress: <strong id="active-monitor-target">...</strong></span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="btn btn-danger btn-sm" id="btn-stop-active-scan">⏹️ Stop Scan</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px;">
+                            <div>Phase: <strong id="active-monitor-phase" style="color: var(--accent-cyan);">INITIALIZING</strong></div>
+                            <div>Progress: <strong id="active-monitor-pct">0%</strong></div>
+                        </div>
+
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" id="active-monitor-progress-bar"></div>
+                        </div>
+
+                        <div style="margin-top: 16px;">
+                            <div style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Live Execution Logs</div>
+                            <div class="terminal-box" id="active-terminal-logs"></div>
+                        </div>
+                    </div>
+
+                    <!-- Scan History Table -->
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><span>📋</span> Scan Jobs History</div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="cyber-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Target URL</th>
+                                        <th>Profile</th>
+                                        <th>Status</th>
+                                        <th>Endpoints</th>
+                                        <th>Findings</th>
+                                        <th>Risk</th>
+                                        <th>Duration</th>
+                                        <th>Started</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scans-history-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. VULNERABILITIES & TRIAGE VIEW -->
+                <section id="view-triage" class="tab-view">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Vulnerability Triage & Retesting</h1>
+                            <p class="page-desc">Investigate vulnerabilities, review HTTP evidence, update triage state, and retest fixes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Filter Toolbar -->
+                    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <input type="text" id="triage-search" placeholder="Search findings by title, endpoint, or category..." style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 9px 14px; color: #FFF; flex: 1; min-width: 250px;" />
+                        <select id="triage-filter-severity" class="select-profile">
+                            <option value="">All Severities</option>
+                            <option value="CRITICAL">Critical</option>
+                            <option value="HIGH">High</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="LOW">Low</option>
+                            <option value="INFO">Info</option>
+                        </select>
+                        <select id="triage-filter-status" class="select-profile">
+                            <option value="">All Statuses</option>
+                            <option value="OPEN">Open</option>
+                            <option value="TRIAGED">Triaged</option>
+                            <option value="RESOLVED">Resolved</option>
+                            <option value="FALSE_POSITIVE">False Positive</option>
+                        </select>
+                        <button class="btn btn-secondary" id="btn-filter-triage">Filter</button>
+                    </div>
+
+                    <!-- Findings Table -->
+                    <div class="panel">
+                        <div class="table-responsive">
+                            <table class="cyber-table">
+                                <thead>
+                                    <tr>
+                                        <th>Severity</th>
+                                        <th>Vulnerability Title</th>
+                                        <th>Category</th>
+                                        <th>Endpoint</th>
+                                        <th>CVSS</th>
+                                        <th>Status</th>
+                                        <th>Source</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="triage-findings-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. ENDPOINTS & API EXPLORER VIEW -->
+                <section id="view-endpoints" class="tab-view">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Discovered Attack Surface & API Explorer</h1>
+                            <p class="page-desc">Comprehensive inventory of discovered web routes, REST endpoints, forms, and parameters.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="table-responsive">
+                            <table class="cyber-table">
+                                <thead>
+                                    <tr>
+                                        <th>Method</th>
+                                        <th>URL Endpoint</th>
+                                        <th>Status Code</th>
+                                        <th>Discovered Parameters</th>
+                                        <th>Discovery Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="endpoints-inventory-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. NUCLEI TEMPLATE STUDIO -->
+                <section id="view-templates" class="tab-view">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Nuclei Template Studio</h1>
+                            <p class="page-desc">Inspect, edit, and test reusable Nuclei YAML security templates in real-time.</p>
+                        </div>
+                    </div>
+
+                    <div class="panels-grid">
+                        <!-- Template Library List -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title"><span>📚</span> Loaded Template Library</div>
+                            </div>
+                            <div style="max-height: 500px; overflow-y: auto;" id="templates-list-container">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Live Template Tester / Editor -->
+                        <div class="panel">
+                            <div class="panel-header">
+                                <div class="panel-title"><span>🧪</span> Live YAML Tester</div>
+                            </div>
+                            <div style="margin-bottom: 10px;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Target URL to test:</label>
+                                <input type="text" id="template-test-target" value="http://localhost:8888" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 8px; color: #FFF; font-family: 'JetBrains Mono', monospace; font-size: 12px;" />
+                            </div>
+                            <div style="margin-bottom: 12px;">
+                                <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Nuclei YAML Template:</label>
+                                <textarea id="template-test-yaml" rows="12" style="width: 100%; background: var(--bg-terminal); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 10px; color: #A7F3D0; font-family: 'JetBrains Mono', monospace; font-size: 12px;"></textarea>
+                            </div>
+                            <button class="btn btn-primary" id="btn-run-template-test" style="width: 100%;"><span>⚡</span> Execute Template Test</button>
+                            <div id="template-test-results" style="margin-top: 14px; font-size: 13px;"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. EXECUTIVE REPORTS VIEW -->
+                <section id="view-reports" class="tab-view">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Executive & Technical Reports</h1>
+                            <p class="page-desc">Generate, preview, and export vulnerability reports in HTML, JSON, Markdown, and CSV formats.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="margin-bottom: 24px;">
+                        <div class="panel-header">
+                            <div class="panel-title"><span>📑</span> Select Scan to Export</div>
+                        </div>
+                        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+                            <select id="report-scan-selector" class="select-profile" style="min-width: 320px;">
+                                <option value="">Select a completed scan...</option>
+                            </select>
+                            <button class="btn btn-primary" id="btn-view-html-report"><span>🌐</span> Open Interactive HTML Report</button>
+                            <button class="btn btn-secondary" id="btn-download-json-report"><span>📦</span> Download JSON</button>
+                            <button class="btn btn-secondary" id="btn-download-md-report"><span>📝</span> Download Markdown</button>
+                            <button class="btn btn-secondary" id="btn-download-csv-report"><span>📊</span> Export CSV</button>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <div class="panel-title"><span>👁️</span> Report Live Preview</div>
+                        </div>
+                        <iframe id="report-preview-frame" style="width: 100%; height: 600px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: #0B0F19;"></iframe>
+                    </div>
+                </section>
+
+                <!-- 7. TEST TARGET LAB VIEW -->
+                <section id="view-testlab" class="tab-view">
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">Intentionally Vulnerable Target Lab</h1>
+                            <p class="page-desc">Safe local testbed demonstrating OWASP Top 10 vulnerabilities for automated scanning.</p>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="max-width: 800px;">
+                        <div style="font-size: 14px; line-height: 1.7; color: var(--text-secondary); margin-bottom: 20px;">
+                            The included test target (<code class="table-code">test_target/vulnerable_app.py</code>) runs locally on port <strong>8888</strong> and implements simulated OWASP Top 10 vulnerabilities:
+                            <ul style="margin: 12px 0 12px 24px;">
+                                <li><strong>A01 Broken Access Control:</strong> Exposed <code class="table-code">/.env</code> secrets, exposed <code class="table-code">/.git/config</code>, Spring Actuator endpoints, BOLA/IDOR user ID traversal.</li>
+                                <li><strong>A03 Injection:</strong> SQL Injection on <code class="table-code">/api/users?id=1'</code>, Reflected XSS on <code class="table-code">/search?q=...</code>, Path Traversal on <code class="table-code">/view?file=...</code>.</li>
+                                <li><strong>A05 Security Misconfiguration:</strong> Missing HSTS/CSP/X-Frame-Options, Server/PHP technology disclosure banners, insecure session cookies.</li>
+                                <li><strong>API Security:</strong> JWT unsigned <code class="table-code">alg: none</code> authentication bypass, PII/Credit card leaks in JSON responses.</li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary" onclick="app.launchDemoTargetScan()">
+                            <span>🚀</span> Launch Automated Audit on Test Target (http://127.0.0.1:8888)
+                        </button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Vulnerability Detail Drawer -->
+    <div class="drawer-overlay" id="finding-drawer">
+        <div class="drawer-panel">
+            <div class="drawer-header">
+                <div>
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+                        <span id="drawer-severity-badge" class="badge-sev badge-CRITICAL">CRITICAL</span>
+                        <span id="drawer-cwe" style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">CWE-89</span>
+                        <span id="drawer-cvss" style="font-size: 12px; color: var(--accent-cyan); font-weight: 700;">CVSS 9.4</span>
+                    </div>
+                    <h2 id="drawer-title" style="font-size: 18px; font-weight: 700; color: #FFF;">Finding Title</h2>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="app.closeDrawer()">✕</button>
+            </div>
+
+            <div class="drawer-body">
+                <div>
+                    <label style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.8px;">Affected Endpoint & Method</label>
+                    <div style="margin-top: 4px; display: flex; align-items: center; gap: 8px;">
+                        <span id="drawer-method" class="method-badge method-GET">GET</span>
+                        <code id="drawer-endpoint" class="table-code" style="word-break: break-all;">http://...</code>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.8px;">Description</label>
+                    <p id="drawer-description" style="font-size: 13.5px; color: var(--text-secondary); margin-top: 4px; line-height: 1.6;"></p>
+                </div>
+
+                <div>
+                    <label style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.8px;">Technical Evidence</label>
+                    <div id="drawer-evidence" class="code-viewer" style="margin-top: 6px;"></div>
+                </div>
+
+                <div class="remediation-callout">
+                    <div style="font-weight: 700; color: var(--accent-cyan); font-size: 13.5px; margin-bottom: 6px;">💡 Remediation Guidance</div>
+                    <div id="drawer-remediation" style="font-size: 13px; color: var(--text-primary); line-height: 1.6;"></div>
+                </div>
+
+                <!-- Retest Result Banner -->
+                <div id="retest-result-banner" style="display: none; padding: 12px; border-radius: var(--radius-md); font-size: 13px;"></div>
+            </div>
+
+            <div class="drawer-footer">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <label style="font-size: 12px; color: var(--text-muted);">Triage State:</label>
+                    <select id="drawer-status-select" class="select-profile" style="padding: 6px 10px; font-size: 12px;">
+                        <option value="OPEN">OPEN</option>
+                        <option value="TRIAGED">TRIAGED</option>
+                        <option value="FALSE_POSITIVE">FALSE POSITIVE</option>
+                        <option value="RESOLVED">RESOLVED</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-primary" id="btn-retest-finding">
+                        <span>🔄</span> Retest Vulnerability
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

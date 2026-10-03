@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Audit Report - http://127.0.0.1:8888</title>
+    <style>
+        :root {
+            --bg-base: #0B0F19;
+            --bg-card: #111827;
+            --bg-card-alt: #1F2937;
+            --text-main: #F9FAFB;
+            --text-muted: #9CA3AF;
+            --border-color: #374151;
+            --accent-primary: #06B6D4;
+            --crit-color: #EF4444;
+            --high-color: #F97316;
+            --med-color: #FBBF24;
+            --low-color: #3B82F6;
+            --info-color: #10B981;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 24px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .shield-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #06B6D4, #3B82F6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        h1 { margin: 0; font-size: 26px; font-weight: 800; color: #FFF; }
+        .subtitle { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+        .badge-risk {
+            padding: 8px 18px;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .risk-high { background: rgba(239, 68, 68, 0.2); color: #F87171; border: 1px solid #EF4444; }
+        .risk-med { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid #F59E0B; }
+        .risk-low { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid #10B981; }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .metric-val { font-size: 32px; font-weight: 800; margin-top: 4px; }
+        .metric-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
+
+        .crit-text { color: var(--crit-color); }
+        .high-text { color: var(--high-color); }
+        .med-text { color: var(--med-color); }
+        .low-text { color: var(--low-color); }
+        .info-text { color: var(--info-color); }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 40px 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .finding-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+        .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            gap: 12px;
+        }
+        .finding-title { font-size: 18px; font-weight: 700; margin: 0; }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-CRITICAL { background: #7F1D1D; color: #FCA5A5; }
+        .badge-HIGH { background: #7C2D12; color: #FDBA74; }
+        .badge-MEDIUM { background: #78350F; color: #FDE68A; }
+        .badge-LOW { background: #1E3A8A; color: #93C5FD; }
+        .badge-INFO { background: #064E3B; color: #6EE7B7; }
+
+        .finding-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 16px;
+            background: var(--bg-card-alt);
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+        .code-box {
+            background: #030712;
+            border: 1px solid #1F2937;
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 13px;
+            color: #E2E8F0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 10px 0;
+        }
+        .remediation-box {
+            background: rgba(6, 182, 212, 0.08);
+            border-left: 4px solid var(--accent-primary);
+            padding: 14px 18px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 16px;
+        }
+        .remediation-title { font-weight: 700; color: #38BDF8; margin-bottom: 4px; font-size: 14px; }
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-title">
+                <div class="shield-icon">🛡️</div>
+                <div>
+                    <h1>Automated Security Audit Report</h1>
+                    <div class="subtitle">Target: <strong>http://127.0.0.1:8888</strong> &bull; Generated: 2026-10-02 23:16:21 UTC</div>
+                </div>
+            </div>
+            <div>
+                <span class="badge-risk risk-high">
+                    Risk Score: 100.0/100
+                </span>
+            </div>
+        </div>
+
+        <!-- Executive Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-lbl">Total Endpoints</div>
+                <div class="metric-val">13</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-lbl">Critical Flaws</div>
+                <div class="metric-val crit-text">4</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-lbl">High Severity</div>
+                <div class="metric-val high-text">3</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-lbl">Medium Severity</div>
+                <div class="metric-val med-text">4</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-lbl">Low & Info</div>
+                <div class="metric-val low-text">9</div>
+            </div>
+        </div>
+
+        <!-- Findings List -->
+        <div class="section-title">
+            <span>Detailed Vulnerability Findings (20)</span>
+        </div>
+
+        
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Missing Security Header: Content-Security-Policy (CSP)</h3>
+                    </div>
+                    <span class="badge badge-Severity.MEDIUM">Severity.MEDIUM</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A05:2021-Security Misconfiguration</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-1021</div>
+                    <div><strong>CVSS v3.1:</strong> 5.4</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Content-Security-Policy helps prevent Cross-Site Scripting (XSS), data injection, and clickjacking attacks.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">HTTP response headers returned from http://127.0.0.1:8888 did not include 'content-security-policy'.</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Implement a strong Content-Security-Policy header restricting script-src, object-src, and default-src directives.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Missing Security Header: X-Frame-Options (Clickjacking Protection)</h3>
+                    </div>
+                    <span class="badge badge-Severity.MEDIUM">Severity.MEDIUM</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A05:2021-Security Misconfiguration</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-1021</div>
+                    <div><strong>CVSS v3.1:</strong> 4.7</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Missing X-Frame-Options header allows malicious websites to embed this site in an <iframe> for clickjacking attacks.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">HTTP response headers returned from http://127.0.0.1:8888 did not include 'x-frame-options'.</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Set 'X-Frame-Options: DENY' or 'X-Frame-Options: SAMEORIGIN' to prevent framing attacks.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Missing Security Header: X-Content-Type-Options (MIME-Sniffing)</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A05:2021-Security Misconfiguration</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-16</div>
+                    <div><strong>CVSS v3.1:</strong> 3.1</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Without this header, older browsers might inspect response contents and execute malicious scripts disguised as images or text.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">HTTP response headers returned from http://127.0.0.1:8888 did not include 'x-content-type-options'.</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Set 'X-Content-Type-Options: nosniff' to disable MIME-type sniffing.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Missing Security Header: Referrer-Policy</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A05:2021-Security Misconfiguration</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-200</div>
+                    <div><strong>CVSS v3.1:</strong> 2.5</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Specifies how much referrer information (URL parameters, tokens) is sent along with requests.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">HTTP response headers returned from http://127.0.0.1:8888 did not include 'referrer-policy'.</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Set 'Referrer-Policy: strict-origin-when-cross-origin' or 'no-referrer'.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Missing Security Header: Permissions-Policy</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A05:2021-Security Misconfiguration</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-16</div>
+                    <div><strong>CVSS v3.1:</strong> 2.0</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Permissions-Policy allows site administrators to declare which browser features can be used.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">HTTP response headers returned from http://127.0.0.1:8888 did not include 'permissions-policy'.</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Implement Permissions-Policy to explicitly declare allowed browser features (camera, microphone, geolocation).</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Web Server Banner Disclosure</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A05:2021-Security Misconfiguration</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-200</div>
+                    <div><strong>CVSS v3.1:</strong> 3.0</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> The server exposes internal technology and version details via the 'server' header.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">Header 'server: uvicorn, Apache/2.4.41 (Ubuntu) PHP/7.4.3' was found in the HTTP response.</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Configure the web server or reverse proxy to strip or obscure the 'server' header.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Backend Technology / Framework Disclosure</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A05:2021-Security Misconfiguration</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-200</div>
+                    <div><strong>CVSS v3.1:</strong> 3.0</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> The server exposes internal technology and version details via the 'x-powered-by' header.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">Header 'x-powered-by: PHP/7.4.3' was found in the HTTP response.</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Configure the web server or reverse proxy to strip or obscure the 'x-powered-by' header.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Insecure Cookie: Missing HttpOnly Flag (session_id)</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A05:2021-Security Misconfiguration</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-1004</div>
+                    <div><strong>CVSS v3.1:</strong> 4.3</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Cookie 'session_id' lacks the HttpOnly attribute, making it accessible to client-side JavaScript and vulnerable to theft via XSS.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">Set-Cookie: session_id=dummy_session_12345; Path=/; SameSite=lax</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Add the 'HttpOnly' flag to all sensitive and session cookies.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Exposed Environment Configuration File (.env)</h3>
+                    </div>
+                    <span class="badge badge-Severity.CRITICAL">Severity.CRITICAL</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A01:2021-Broken Access Control</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/.env</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-552</div>
+                    <div><strong>CVSS v3.1:</strong> 9.8</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> The application's environment configuration file (.env) is publicly accessible, leaking database credentials, API keys, and sensitive secrets.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">GET http://127.0.0.1:8888/.env returned HTTP 200 OK with matching fingerprint: 'DB_PASSWORD'.
+
+Response preview:
+APP_ENV=production
+    APP_KEY=base64:u3n45928374982374982374=
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=corp_production
+    DB_USERNAME=root
+    DB_PASSWORD=SuperSecretPassw0rd!123
+    AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+    AWS_SECRET_ACCESS_KEY=wJalrXU</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Restrict web server access to dotfiles like '.env' and place sensitive configuration outside the web root directory.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Exposed Git Repository Configuration (.git/config)</h3>
+                    </div>
+                    <span class="badge badge-Severity.HIGH">Severity.HIGH</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A01:2021-Broken Access Control</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/.git/config</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-538</div>
+                    <div><strong>CVSS v3.1:</strong> 7.5</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> The Git directory is exposed via the web root, allowing attackers to reconstruct source code, commit history, and hidden credentials.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">GET http://127.0.0.1:8888/.git/config returned HTTP 200 OK with matching fingerprint: '[core]'.
+
+Response preview:
+[core]
+        repositoryformatversion = 0
+        filemode = true
+        bare = false
+        logallrefupdates = true
+    [remote "origin"]
+        url = https://github.com/company/internal-secret-app.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+    [branch "main"]
+        remote =</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Configure the web server (Nginx/Apache) to deny all HTTP requests to the '/.git' directory.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Exposed Spring Boot Actuator Environment (/actuator/env)</h3>
+                    </div>
+                    <span class="badge badge-Severity.CRITICAL">Severity.CRITICAL</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A01:2021-Broken Access Control</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/actuator/env</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-200</div>
+                    <div><strong>CVSS v3.1:</strong> 9.1</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Spring Boot Actuator '/env' endpoint is exposed without authentication, leaking internal environment properties and credentials.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">GET http://127.0.0.1:8888/actuator/env returned HTTP 200 OK with matching fingerprint: 'activeProfiles'.
+
+Response preview:
+{"activeProfiles":["prod"],"propertySources":[{"name":"systemProperties","properties":{"java.runtime.version":{"value":"17.0.2"}}},{"name":"applicationConfig: [classpath:/application.yml]","properties":{"spring.datasource.password":{"value":"******"}}}]}</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Disable or enforce strict Spring Security authentication on all '/actuator/*' endpoints.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Open Redirect in Parameter 'url'</h3>
+                    </div>
+                    <span class="badge badge-Severity.MEDIUM">Severity.MEDIUM</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> A01:2021-Broken Access Control</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/redirect</code></div>
+                    <div><strong>Parameter:</strong> <code>url</code></div>
+                    <div><strong>CWE:</strong> CWE-601</div>
+                    <div><strong>CVSS v3.1:</strong> 6.1</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> The endpoint accepts an untrusted destination URL in parameter 'url' and redirects users without validation, facilitating phishing and credential theft.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">Open Redirect detected on parameter 'url':
+Request URL: http://127.0.0.1:8888/redirect?url=https%3A%2F%2Fexample.com%2Fsec-probe-redirect
+Technique: Direct HTTPS URL
+Status Code: 302
+Location Header: https://example.com/sec-probe-redirect</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Implement a whitelist of approved redirect URLs, or restrict redirects strictly to relative paths starting with a single forward slash.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">API1: Broken Object Level Authorization (BOLA / IDOR)</h3>
+                    </div>
+                    <span class="badge badge-Severity.HIGH">Severity.HIGH</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> API Security</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/api/users/1</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-639</div>
+                    <div><strong>CVSS v3.1:</strong> 8.1</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> The API allows accessing object records across different IDs without validating user authorization or tenant ownership.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">Potential BOLA / IDOR vulnerability on endpoint:
+Original: http://127.0.0.1:8888/api/users/1 -> HTTP 200
+Mutated Object ID: http://127.0.0.1:8888/api/users/2 -> HTTP 200
+Response preview:
+{"id":2,"username":"bob","email":"bob@company.internal","credit_card":"5424-9876-5432-1098","role":"user"}</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Implement authorization checks verifying that the currently logged-in user has permission to read or manipulate the requested object ID.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">API4: Unrestricted Resource Consumption (Missing Rate Limiting)</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> API Security</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/</code></div>
+                    
+                    <div><strong>CWE:</strong> CWE-770</div>
+                    <div><strong>CVSS v3.1:</strong> 4.0</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> The API endpoint lacks rate limiting or request throttling, leaving it vulnerable to Denial of Service (DoS) and brute force attacks.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">Sent 12 rapid consecutive requests to 'http://127.0.0.1:8888/'.
+All 12 requests returned HTTP 200 OK without rate-limiting headers or HTTP 429 status.</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Implement rate limiting (e.g., token bucket, redis-based rate limiting) and return HTTP 429 Too Many Requests with standard Retry-After headers.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Exposed Git Repository Configuration File</h3>
+                    </div>
+                    <span class="badge badge-Severity.HIGH">Severity.HIGH</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> Nuclei Security Check</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/.git/config</code></div>
+                    
+                    
+                    <div><strong>CVSS v3.1:</strong> 7.8</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Detects exposed /.git/config file leaking repository origins, credentials, and branches.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">[Nuclei Match] Template: git-config-leak
+Target: GET http://127.0.0.1:8888/.git/config
+HTTP Response Status: 200
+Match Evidence:
+Matched words in body: ['[core]', 'repositoryformatversion']
+Status 200 in [200]</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Block access to hidden directories and dotfiles (.git) on the web server.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Missing X-Frame-Options Header</h3>
+                    </div>
+                    <span class="badge badge-Severity.MEDIUM">Severity.MEDIUM</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> Nuclei Security Check</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/</code></div>
+                    
+                    
+                    <div><strong>CVSS v3.1:</strong> 5.5</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Checks if the target responds without the X-Frame-Options header, leaving it open to clickjacking.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">[Nuclei Match] Template: missing-security-headers
+Target: GET http://127.0.0.1:8888/
+HTTP Response Status: 200
+Match Evidence:
+Status 200 in [200]</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Configure web server to return X-Frame-Options DENY or SAMEORIGIN.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Spring Boot Actuator Endpoints Exposure</h3>
+                    </div>
+                    <span class="badge badge-Severity.CRITICAL">Severity.CRITICAL</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> Nuclei Security Check</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/actuator/env</code></div>
+                    
+                    
+                    <div><strong>CVSS v3.1:</strong> 9.5</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Detects unauthenticated exposure of Spring Boot Actuator management endpoints (/actuator/env, /actuator/heapdump).</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">[Nuclei Match] Template: exposed-actuator-endpoints
+Target: GET http://127.0.0.1:8888/actuator/env
+HTTP Response Status: 200
+Match Evidence:
+Matched words in body: ['propertySources', 'systemProperties']
+Status 200 in [200]</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Enforce strict authentication on all actuator endpoints and disable sensitive endpoints in production.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Exposed .env Configuration & Secret Disclosure</h3>
+                    </div>
+                    <span class="badge badge-Severity.CRITICAL">Severity.CRITICAL</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> Nuclei Security Check</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/.env</code></div>
+                    
+                    
+                    <div><strong>CVSS v3.1:</strong> 9.5</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Detects public accessibility of .env files containing credentials, tokens, and database connection strings.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">[Nuclei Match] Template: exposed-env-secrets
+Target: GET http://127.0.0.1:8888/.env
+HTTP Response Status: 200
+Match Evidence:
+Matched regex in body: ['DB_PASSWORD=']
+Status 200 in [200]</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Restrict web server access to .env files and place sensitive environment configs outside the web root.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Swagger / OpenAPI UI & Schema Public Exposure</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> Nuclei Security Check</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/openapi.json</code></div>
+                    
+                    
+                    <div><strong>CVSS v3.1:</strong> 3.2</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Detects publicly exposed Swagger UI or OpenAPI documentation that may disclose internal endpoints and schemas.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">[Nuclei Match] Template: swagger-api-exposed
+Target: GET http://127.0.0.1:8888/openapi.json
+HTTP Response Status: 200
+Match Evidence:
+Matched words in body: ['"openapi":']
+Status 200 in [200]</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Restrict OpenAPI docs and Swagger UI behind authentication or internal VPN access.</div>
+                </div>
+            </div>
+            
+            <div class="finding-card">
+                <div class="finding-header">
+                    <div>
+                        <h3 class="finding-title">Swagger / OpenAPI UI & Schema Public Exposure</h3>
+                    </div>
+                    <span class="badge badge-Severity.LOW">Severity.LOW</span>
+                </div>
+
+                <div class="finding-meta">
+                    <div><strong>Category:</strong> Nuclei Security Check</div>
+                    <div><strong>Endpoint:</strong> <code>GET http://127.0.0.1:8888/docs</code></div>
+                    
+                    
+                    <div><strong>CVSS v3.1:</strong> 3.2</div>
+                    <div><strong>Status:</strong> FindingStatus.OPEN</div>
+                </div>
+
+                <p><strong>Description:</strong> Detects publicly exposed Swagger UI or OpenAPI documentation that may disclose internal endpoints and schemas.</p>
+
+                <div><strong>Technical Evidence:</strong></div>
+                <div class="code-box">[Nuclei Match] Template: swagger-api-exposed
+Target: GET http://127.0.0.1:8888/docs
+HTTP Response Status: 200
+Match Evidence:
+Matched words in body: ['swagger-ui']
+Status 200 in [200]</div>
+
+                <div class="remediation-box">
+                    <div class="remediation-title">💡 Remediation & Mitigation Guidance</div>
+                    <div>Restrict OpenAPI docs and Swagger UI behind authentication or internal VPN access.</div>
+                </div>
+            </div>
+            
+        
+
+        <div class="footer">
+            Generated automatically by Antigravity Web & API Vulnerability Scanner &bull; Profile: FULL &bull; Scan Duration: 0.72s
+        </div>
+    </div>
+</body>
+</html>

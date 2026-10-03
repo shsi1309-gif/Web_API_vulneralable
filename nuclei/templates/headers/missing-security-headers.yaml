@@ -1,0 +1,25 @@
+id: missing-security-headers
+info:
+  name: Missing X-Frame-Options Header
+  author: security-team
+  severity: medium
+  description: Checks if the target responds without the X-Frame-Options header, leaving it open to clickjacking.
+  reference:
+    - https://owasp.org/www-community/attacks/Clickjacking
+  tags: headers,clickjacking,config
+  remediation: Configure web server to return X-Frame-Options DENY or SAMEORIGIN.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+    matchers-condition: and
+    matchers:
+      - type: regex
+        part: header
+        negative: true
+        regex:
+          - "(?i)X-Frame-Options:"
+      - type: status
+        status:
+          - 200

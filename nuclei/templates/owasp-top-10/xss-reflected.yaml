@@ -1,0 +1,28 @@
+id: xss-reflected-canary
+info:
+  name: Reflected Cross-Site Scripting (XSS) Canary Check
+  author: security-team
+  severity: high
+  description: Detects reflection of unescaped script and svg HTML tags.
+  reference:
+    - https://owasp.org/www-community/attacks/xss/
+  tags: xss,injection,owasp-top-10
+  remediation: Context-encode all user input before outputting into HTML markup.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/?q=%3Cscript%3Ealert(%27xss_probe%27)%3C/script%3E"
+      - "{{BaseURL}}/?search=%22%3E%3Cscript%3Ealert(%27xss_probe%27)%3C/script%3E"
+      - "{{BaseURL}}/?name=%3Csvg/onload=alert(%27xss_probe%27)%3E"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "<script>alert('xss_probe')</script>"
+          - "<svg/onload=alert('xss_probe')>"
+        condition: or
+      - type: status
+        status:
+          - 200

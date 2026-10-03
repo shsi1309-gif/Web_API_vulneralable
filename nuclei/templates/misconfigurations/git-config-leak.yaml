@@ -1,0 +1,26 @@
+id: git-config-leak
+info:
+  name: Exposed Git Repository Configuration File
+  author: security-team
+  severity: high
+  description: Detects exposed /.git/config file leaking repository origins, credentials, and branches.
+  reference:
+    - https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration
+  tags: git,disclosure,misconfiguration
+  remediation: Block access to hidden directories and dotfiles (.git) on the web server.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/.git/config"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "[core]"
+          - "repositoryformatversion"
+        condition: and
+      - type: status
+        status:
+          - 200

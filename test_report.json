@@ -1,0 +1,705 @@
+{
+  "target": "http://127.0.0.1:8888",
+  "summary": {
+    "total_endpoints_tested": 13,
+    "total_findings": 20,
+    "critical_count": 4,
+    "high_count": 3,
+    "medium_count": 4,
+    "low_count": 9,
+    "info_count": 0,
+    "risk_score": 100.0,
+    "duration_seconds": 0.72
+  },
+  "findings": [
+    {
+      "id": "a96f5845-92e3-4d38-b96b-382168dfa4ec",
+      "title": "Missing Security Header: Content-Security-Policy (CSP)",
+      "severity": "MEDIUM",
+      "category": "A05:2021-Security Misconfiguration",
+      "cwe_id": "CWE-1021",
+      "cvss_score": 5.4,
+      "endpoint": "http://127.0.0.1:8888",
+      "method": "GET",
+      "parameter": null,
+      "description": "Content-Security-Policy helps prevent Cross-Site Scripting (XSS), data injection, and clickjacking attacks.",
+      "evidence": "HTTP response headers returned from http://127.0.0.1:8888 did not include 'content-security-policy'.",
+      "request_data": {},
+      "response_data": {
+        "date": "Fri, 02 Oct 2026 17:46:20 GMT",
+        "server": "uvicorn, Apache/2.4.41 (Ubuntu) PHP/7.4.3",
+        "content-length": "963",
+        "content-type": "text/html; charset=utf-8",
+        "x-powered-by": "PHP/7.4.3",
+        "set-cookie": "session_id=dummy_session_12345; Path=/; SameSite=lax"
+      },
+      "remediation": "Implement a strong Content-Security-Policy header restricting script-src, object-src, and default-src directives.",
+      "references": [
+        "https://owasp.org/www-project-secure-headers/"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.373722"
+    },
+    {
+      "id": "af79a6c7-c704-4e55-a9c7-f1550d2248b2",
+      "title": "Missing Security Header: X-Frame-Options (Clickjacking Protection)",
+      "severity": "MEDIUM",
+      "category": "A05:2021-Security Misconfiguration",
+      "cwe_id": "CWE-1021",
+      "cvss_score": 4.7,
+      "endpoint": "http://127.0.0.1:8888",
+      "method": "GET",
+      "parameter": null,
+      "description": "Missing X-Frame-Options header allows malicious websites to embed this site in an <iframe> for clickjacking attacks.",
+      "evidence": "HTTP response headers returned from http://127.0.0.1:8888 did not include 'x-frame-options'.",
+      "request_data": {},
+      "response_data": {
+        "date": "Fri, 02 Oct 2026 17:46:20 GMT",
+        "server": "uvicorn, Apache/2.4.41 (Ubuntu) PHP/7.4.3",
+        "content-length": "963",
+        "content-type": "text/html; charset=utf-8",
+        "x-powered-by": "PHP/7.4.3",
+        "set-cookie": "session_id=dummy_session_12345; Path=/; SameSite=lax"
+      },
+      "remediation": "Set 'X-Frame-Options: DENY' or 'X-Frame-Options: SAMEORIGIN' to prevent framing attacks.",
+      "references": [
+        "https://owasp.org/www-project-secure-headers/"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.373761"
+    },
+    {
+      "id": "0ad7b27d-efff-4de1-b234-29d14eea479c",
+      "title": "Missing Security Header: X-Content-Type-Options (MIME-Sniffing)",
+      "severity": "LOW",
+      "category": "A05:2021-Security Misconfiguration",
+      "cwe_id": "CWE-16",
+      "cvss_score": 3.1,
+      "endpoint": "http://127.0.0.1:8888",
+      "method": "GET",
+      "parameter": null,
+      "description": "Without this header, older browsers might inspect response contents and execute malicious scripts disguised as images or text.",
+      "evidence": "HTTP response headers returned from http://127.0.0.1:8888 did not include 'x-content-type-options'.",
+      "request_data": {},
+      "response_data": {
+        "date": "Fri, 02 Oct 2026 17:46:20 GMT",
+        "server": "uvicorn, Apache/2.4.41 (Ubuntu) PHP/7.4.3",
+        "content-length": "963",
+        "content-type": "text/html; charset=utf-8",
+        "x-powered-by": "PHP/7.4.3",
+        "set-cookie": "session_id=dummy_session_12345; Path=/; SameSite=lax"
+      },
+      "remediation": "Set 'X-Content-Type-Options: nosniff' to disable MIME-type sniffing.",
+      "references": [
+        "https://owasp.org/www-project-secure-headers/"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.373786"
+    },
+    {
+      "id": "d7ae6c93-86bc-4146-a60a-7ead0847a00a",
+      "title": "Missing Security Header: Referrer-Policy",
+      "severity": "LOW",
+      "category": "A05:2021-Security Misconfiguration",
+      "cwe_id": "CWE-200",
+      "cvss_score": 2.5,
+      "endpoint": "http://127.0.0.1:8888",
+      "method": "GET",
+      "parameter": null,
+      "description": "Specifies how much referrer information (URL parameters, tokens) is sent along with requests.",
+      "evidence": "HTTP response headers returned from http://127.0.0.1:8888 did not include 'referrer-policy'.",
+      "request_data": {},
+      "response_data": {
+        "date": "Fri, 02 Oct 2026 17:46:20 GMT",
+        "server": "uvicorn, Apache/2.4.41 (Ubuntu) PHP/7.4.3",
+        "content-length": "963",
+        "content-type": "text/html; charset=utf-8",
+        "x-powered-by": "PHP/7.4.3",
+        "set-cookie": "session_id=dummy_session_12345; Path=/; SameSite=lax"
+      },
+      "remediation": "Set 'Referrer-Policy: strict-origin-when-cross-origin' or 'no-referrer'.",
+      "references": [
+        "https://owasp.org/www-project-secure-headers/"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.373806"
+    },
+    {
+      "id": "2b8ed69a-9613-4613-8718-a0ee5a69d2af",
+      "title": "Missing Security Header: Permissions-Policy",
+      "severity": "LOW",
+      "category": "A05:2021-Security Misconfiguration",
+      "cwe_id": "CWE-16",
+      "cvss_score": 2.0,
+      "endpoint": "http://127.0.0.1:8888",
+      "method": "GET",
+      "parameter": null,
+      "description": "Permissions-Policy allows site administrators to declare which browser features can be used.",
+      "evidence": "HTTP response headers returned from http://127.0.0.1:8888 did not include 'permissions-policy'.",
+      "request_data": {},
+      "response_data": {
+        "date": "Fri, 02 Oct 2026 17:46:20 GMT",
+        "server": "uvicorn, Apache/2.4.41 (Ubuntu) PHP/7.4.3",
+        "content-length": "963",
+        "content-type": "text/html; charset=utf-8",
+        "x-powered-by": "PHP/7.4.3",
+        "set-cookie": "session_id=dummy_session_12345; Path=/; SameSite=lax"
+      },
+      "remediation": "Implement Permissions-Policy to explicitly declare allowed browser features (camera, microphone, geolocation).",
+      "references": [
+        "https://owasp.org/www-project-secure-headers/"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.373826"
+    },
+    {
+      "id": "d97fc212-4421-41e9-b4eb-f1df0e1a7827",
+      "title": "Web Server Banner Disclosure",
+      "severity": "LOW",
+      "category": "A05:2021-Security Misconfiguration",
+      "cwe_id": "CWE-200",
+      "cvss_score": 3.0,
+      "endpoint": "http://127.0.0.1:8888",
+      "method": "GET",
+      "parameter": null,
+      "description": "The server exposes internal technology and version details via the 'server' header.",
+      "evidence": "Header 'server: uvicorn, Apache/2.4.41 (Ubuntu) PHP/7.4.3' was found in the HTTP response.",
+      "request_data": {},
+      "response_data": {
+        "server": "uvicorn, Apache/2.4.41 (Ubuntu) PHP/7.4.3"
+      },
+      "remediation": "Configure the web server or reverse proxy to strip or obscure the 'server' header.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/200.html"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.373841"
+    },
+    {
+      "id": "be6c68dd-a00b-4c15-acd9-af37a6283643",
+      "title": "Backend Technology / Framework Disclosure",
+      "severity": "LOW",
+      "category": "A05:2021-Security Misconfiguration",
+      "cwe_id": "CWE-200",
+      "cvss_score": 3.0,
+      "endpoint": "http://127.0.0.1:8888",
+      "method": "GET",
+      "parameter": null,
+      "description": "The server exposes internal technology and version details via the 'x-powered-by' header.",
+      "evidence": "Header 'x-powered-by: PHP/7.4.3' was found in the HTTP response.",
+      "request_data": {},
+      "response_data": {
+        "x-powered-by": "PHP/7.4.3"
+      },
+      "remediation": "Configure the web server or reverse proxy to strip or obscure the 'x-powered-by' header.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/200.html"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.373854"
+    },
+    {
+      "id": "1e8b6ced-102f-4196-a08d-a9a370685ed5",
+      "title": "Insecure Cookie: Missing HttpOnly Flag (session_id)",
+      "severity": "LOW",
+      "category": "A05:2021-Security Misconfiguration",
+      "cwe_id": "CWE-1004",
+      "cvss_score": 4.3,
+      "endpoint": "http://127.0.0.1:8888",
+      "method": "GET",
+      "parameter": null,
+      "description": "Cookie 'session_id' lacks the HttpOnly attribute, making it accessible to client-side JavaScript and vulnerable to theft via XSS.",
+      "evidence": "Set-Cookie: session_id=dummy_session_12345; Path=/; SameSite=lax",
+      "request_data": {},
+      "response_data": {},
+      "remediation": "Add the 'HttpOnly' flag to all sensitive and session cookies.",
+      "references": [
+        "https://owasp.org/www-community/HttpOnly"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.376211"
+    },
+    {
+      "id": "2543c3ab-f45e-4278-b998-20f9709f3120",
+      "title": "Exposed Environment Configuration File (.env)",
+      "severity": "CRITICAL",
+      "category": "A01:2021-Broken Access Control",
+      "cwe_id": "CWE-552",
+      "cvss_score": 9.8,
+      "endpoint": "http://127.0.0.1:8888/.env",
+      "method": "GET",
+      "parameter": null,
+      "description": "The application's environment configuration file (.env) is publicly accessible, leaking database credentials, API keys, and sensitive secrets.",
+      "evidence": "GET http://127.0.0.1:8888/.env returned HTTP 200 OK with matching fingerprint: 'DB_PASSWORD'.\n\nResponse preview:\nAPP_ENV=production\n    APP_KEY=base64:u3n45928374982374982374=\n    DB_CONNECTION=mysql\n    DB_HOST=127.0.0.1\n    DB_PORT=3306\n    DB_DATABASE=corp_production\n    DB_USERNAME=root\n    DB_PASSWORD=SuperSecretPassw0rd!123\n    AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\n    AWS_SECRET_ACCESS_KEY=wJalrXU",
+      "request_data": {},
+      "response_data": {
+        "status": 200,
+        "preview": "APP_ENV=production\n    APP_KEY=base64:u3n45928374982374982374=\n    DB_CONNECTION=mysql\n    DB_HOST=127.0.0.1\n    DB_PORT=3306\n    DB_DATABASE=corp_production\n    DB_USERNAME=root\n    DB_PASSWORD=SuperSecretPassw0rd!123\n    AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\n    AWS_SECRET_ACCESS_KEY=wJalrXU"
+      },
+      "remediation": "Restrict web server access to dotfiles like '.env' and place sensitive configuration outside the web root directory.",
+      "references": [
+        "https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.379189"
+    },
+    {
+      "id": "2b4eaf4e-4e28-40f0-b741-fd9453acb9a4",
+      "title": "Exposed Git Repository Configuration (.git/config)",
+      "severity": "HIGH",
+      "category": "A01:2021-Broken Access Control",
+      "cwe_id": "CWE-538",
+      "cvss_score": 7.5,
+      "endpoint": "http://127.0.0.1:8888/.git/config",
+      "method": "GET",
+      "parameter": null,
+      "description": "The Git directory is exposed via the web root, allowing attackers to reconstruct source code, commit history, and hidden credentials.",
+      "evidence": "GET http://127.0.0.1:8888/.git/config returned HTTP 200 OK with matching fingerprint: '[core]'.\n\nResponse preview:\n[core]\n        repositoryformatversion = 0\n        filemode = true\n        bare = false\n        logallrefupdates = true\n    [remote \"origin\"]\n        url = https://github.com/company/internal-secret-app.git\n        fetch = +refs/heads/*:refs/remotes/origin/*\n    [branch \"main\"]\n        remote =",
+      "request_data": {},
+      "response_data": {
+        "status": 200,
+        "preview": "[core]\n        repositoryformatversion = 0\n        filemode = true\n        bare = false\n        logallrefupdates = true\n    [remote \"origin\"]\n        url = https://github.com/company/internal-secret-app.git\n        fetch = +refs/heads/*:refs/remotes/origin/*\n    [branch \"main\"]\n        remote ="
+      },
+      "remediation": "Configure the web server (Nginx/Apache) to deny all HTTP requests to the '/.git' directory.",
+      "references": [
+        "https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.381394"
+    },
+    {
+      "id": "f16f360e-697d-47a0-ae63-8fa6f1108f8f",
+      "title": "Exposed Spring Boot Actuator Environment (/actuator/env)",
+      "severity": "CRITICAL",
+      "category": "A01:2021-Broken Access Control",
+      "cwe_id": "CWE-200",
+      "cvss_score": 9.1,
+      "endpoint": "http://127.0.0.1:8888/actuator/env",
+      "method": "GET",
+      "parameter": null,
+      "description": "Spring Boot Actuator '/env' endpoint is exposed without authentication, leaking internal environment properties and credentials.",
+      "evidence": "GET http://127.0.0.1:8888/actuator/env returned HTTP 200 OK with matching fingerprint: 'activeProfiles'.\n\nResponse preview:\n{\"activeProfiles\":[\"prod\"],\"propertySources\":[{\"name\":\"systemProperties\",\"properties\":{\"java.runtime.version\":{\"value\":\"17.0.2\"}}},{\"name\":\"applicationConfig: [classpath:/application.yml]\",\"properties\":{\"spring.datasource.password\":{\"value\":\"******\"}}}]}",
+      "request_data": {},
+      "response_data": {
+        "status": 200,
+        "preview": "{\"activeProfiles\":[\"prod\"],\"propertySources\":[{\"name\":\"systemProperties\",\"properties\":{\"java.runtime.version\":{\"value\":\"17.0.2\"}}},{\"name\":\"applicationConfig: [classpath:/application.yml]\",\"properties\":{\"spring.datasource.password\":{\"value\":\"******\"}}}]}"
+      },
+      "remediation": "Disable or enforce strict Spring Security authentication on all '/actuator/*' endpoints.",
+      "references": [
+        "https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.386511"
+    },
+    {
+      "id": "c775df90-d4be-4073-a76e-d9def18c6981",
+      "title": "Open Redirect in Parameter 'url'",
+      "severity": "MEDIUM",
+      "category": "A01:2021-Broken Access Control",
+      "cwe_id": "CWE-601",
+      "cvss_score": 6.1,
+      "endpoint": "http://127.0.0.1:8888/redirect",
+      "method": "GET",
+      "parameter": "url",
+      "description": "The endpoint accepts an untrusted destination URL in parameter 'url' and redirects users without validation, facilitating phishing and credential theft.",
+      "evidence": "Open Redirect detected on parameter 'url':\nRequest URL: http://127.0.0.1:8888/redirect?url=https%3A%2F%2Fexample.com%2Fsec-probe-redirect\nTechnique: Direct HTTPS URL\nStatus Code: 302\nLocation Header: https://example.com/sec-probe-redirect",
+      "request_data": {
+        "url": "http://127.0.0.1:8888/redirect?url=https%3A%2F%2Fexample.com%2Fsec-probe-redirect",
+        "param": "url",
+        "payload": "https://example.com/sec-probe-redirect"
+      },
+      "response_data": {
+        "status": 302,
+        "location": "https://example.com/sec-probe-redirect"
+      },
+      "remediation": "Implement a whitelist of approved redirect URLs, or restrict redirects strictly to relative paths starting with a single forward slash.",
+      "references": [
+        "https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.426723"
+    },
+    {
+      "id": "52f7a347-de7f-4bf3-ae3a-eed43b72ed0b",
+      "title": "API1: Broken Object Level Authorization (BOLA / IDOR)",
+      "severity": "HIGH",
+      "category": "API Security",
+      "cwe_id": "CWE-639",
+      "cvss_score": 8.1,
+      "endpoint": "http://127.0.0.1:8888/api/users/1",
+      "method": "GET",
+      "parameter": null,
+      "description": "The API allows accessing object records across different IDs without validating user authorization or tenant ownership.",
+      "evidence": "Potential BOLA / IDOR vulnerability on endpoint:\nOriginal: http://127.0.0.1:8888/api/users/1 -> HTTP 200\nMutated Object ID: http://127.0.0.1:8888/api/users/2 -> HTTP 200\nResponse preview:\n{\"id\":2,\"username\":\"bob\",\"email\":\"bob@company.internal\",\"credit_card\":\"5424-9876-5432-1098\",\"role\":\"user\"}",
+      "request_data": {},
+      "response_data": {},
+      "remediation": "Implement authorization checks verifying that the currently logged-in user has permission to read or manipulate the requested object ID.",
+      "references": [
+        "https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.462365"
+    },
+    {
+      "id": "e88bd29d-ccbf-4b16-80c3-08ad65b9b5fb",
+      "title": "API4: Unrestricted Resource Consumption (Missing Rate Limiting)",
+      "severity": "LOW",
+      "category": "API Security",
+      "cwe_id": "CWE-770",
+      "cvss_score": 4.0,
+      "endpoint": "http://127.0.0.1:8888/",
+      "method": "GET",
+      "parameter": null,
+      "description": "The API endpoint lacks rate limiting or request throttling, leaving it vulnerable to Denial of Service (DoS) and brute force attacks.",
+      "evidence": "Sent 12 rapid consecutive requests to 'http://127.0.0.1:8888/'.\nAll 12 requests returned HTTP 200 OK without rate-limiting headers or HTTP 429 status.",
+      "request_data": {},
+      "response_data": {},
+      "remediation": "Implement rate limiting (e.g., token bucket, redis-based rate limiting) and return HTTP 429 Too Many Requests with standard Retry-After headers.",
+      "references": [
+        "https://owasp.org/API-Security/editions/2023/en/0xa4-unrestricted-resource-consumption/"
+      ],
+      "status": "OPEN",
+      "check_source": "builtin",
+      "template_id": null,
+      "discovered_at": "2026-10-02 17:46:21.485158"
+    },
+    {
+      "id": "3efcf7ae-8ce1-4888-acd0-53a20b3a8bb1",
+      "title": "Exposed Git Repository Configuration File",
+      "severity": "HIGH",
+      "category": "Nuclei Security Check",
+      "cwe_id": null,
+      "cvss_score": 7.8,
+      "endpoint": "http://127.0.0.1:8888/.git/config",
+      "method": "GET",
+      "parameter": null,
+      "description": "Detects exposed /.git/config file leaking repository origins, credentials, and branches.",
+      "evidence": "[Nuclei Match] Template: git-config-leak\nTarget: GET http://127.0.0.1:8888/.git/config\nHTTP Response Status: 200\nMatch Evidence:\nMatched words in body: ['[core]', 'repositoryformatversion']\nStatus 200 in [200]",
+      "request_data": {
+        "url": "http://127.0.0.1:8888/.git/config",
+        "method": "GET",
+        "headers": {}
+      },
+      "response_data": {
+        "status": 200,
+        "preview": "\n    [core]\n        repositoryformatversion = 0\n        filemode = true\n        bare = false\n        logallrefupdates = true\n    [remote \"origin\"]\n        url = https://github.com/company/internal-secret-app.git\n        fetch = +refs/heads/*:refs/remotes/origin/*\n    [branch \"main\"]\n        remote ="
+      },
+      "remediation": "Block access to hidden directories and dotfiles (.git) on the web server.",
+      "references": [
+        "https://owasp.org/www-project-top-ten/2017/A6_2017-Security_Misconfiguration"
+      ],
+      "status": "OPEN",
+      "check_source": "nuclei",
+      "template_id": "git-config-leak",
+      "discovered_at": "2026-10-02 17:46:21.740991"
+    },
+    {
+      "id": "c96b5ad4-03ef-4eb0-82cc-c880858ef793",
+      "title": "Missing X-Frame-Options Header",
+      "severity": "MEDIUM",
+      "category": "Nuclei Security Check",
+      "cwe_id": null,
+      "cvss_score": 5.5,
+      "endpoint": "http://127.0.0.1:8888/",
+      "method": "GET",
+      "parameter": null,
+      "description": "Checks if the target responds without the X-Frame-Options header, leaving it open to clickjacking.",
+      "evidence": "[Nuclei Match] Template: missing-security-headers\nTarget: GET http://127.0.0.1:8888/\nHTTP Response Status: 200\nMatch Evidence:\nStatus 200 in [200]",
+      "request_data": {
+        "url": "http://127.0.0.1:8888/",
+        "method": "GET",
+        "headers": {}
+      },
+      "response_data": {
+        "status": 200,
+        "preview": "\n    <!DOCTYPE html>\n    <html>\n    <head><title>Vulnerable Shop & Portal</title></head>\n    <body>\n        <h1>Welcome to Acme Demo Portal</h1>\n        <p>This is a test application containing intentionally vulnerable endpoints for scanner testing.</p>\n        <ul>\n            <li><a href=\"/search?"
+      },
+      "remediation": "Configure web server to return X-Frame-Options DENY or SAMEORIGIN.",
+      "references": [
+        "https://owasp.org/www-community/attacks/Clickjacking"
+      ],
+      "status": "OPEN",
+      "check_source": "nuclei",
+      "template_id": "missing-security-headers",
+      "discovered_at": "2026-10-02 17:46:21.743220"
+    },
+    {
+      "id": "0c8400e4-43b4-43f3-ab15-2b63657495b2",
+      "title": "Spring Boot Actuator Endpoints Exposure",
+      "severity": "CRITICAL",
+      "category": "Nuclei Security Check",
+      "cwe_id": null,
+      "cvss_score": 9.5,
+      "endpoint": "http://127.0.0.1:8888/actuator/env",
+      "method": "GET",
+      "parameter": null,
+      "description": "Detects unauthenticated exposure of Spring Boot Actuator management endpoints (/actuator/env, /actuator/heapdump).",
+      "evidence": "[Nuclei Match] Template: exposed-actuator-endpoints\nTarget: GET http://127.0.0.1:8888/actuator/env\nHTTP Response Status: 200\nMatch Evidence:\nMatched words in body: ['propertySources', 'systemProperties']\nStatus 200 in [200]",
+      "request_data": {
+        "url": "http://127.0.0.1:8888/actuator/env",
+        "method": "GET",
+        "headers": {}
+      },
+      "response_data": {
+        "status": 200,
+        "preview": "{\"activeProfiles\":[\"prod\"],\"propertySources\":[{\"name\":\"systemProperties\",\"properties\":{\"java.runtime.version\":{\"value\":\"17.0.2\"}}},{\"name\":\"applicationConfig: [classpath:/application.yml]\",\"properties\":{\"spring.datasource.password\":{\"value\":\"******\"}}}]}"
+      },
+      "remediation": "Enforce strict authentication on all actuator endpoints and disable sensitive endpoints in production.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/200.html"
+      ],
+      "status": "OPEN",
+      "check_source": "nuclei",
+      "template_id": "exposed-actuator-endpoints",
+      "discovered_at": "2026-10-02 17:46:21.745225"
+    },
+    {
+      "id": "bd55fadb-52ef-4e60-83fd-086e5465dad3",
+      "title": "Exposed .env Configuration & Secret Disclosure",
+      "severity": "CRITICAL",
+      "category": "Nuclei Security Check",
+      "cwe_id": null,
+      "cvss_score": 9.5,
+      "endpoint": "http://127.0.0.1:8888/.env",
+      "method": "GET",
+      "parameter": null,
+      "description": "Detects public accessibility of .env files containing credentials, tokens, and database connection strings.",
+      "evidence": "[Nuclei Match] Template: exposed-env-secrets\nTarget: GET http://127.0.0.1:8888/.env\nHTTP Response Status: 200\nMatch Evidence:\nMatched regex in body: ['DB_PASSWORD=']\nStatus 200 in [200]",
+      "request_data": {
+        "url": "http://127.0.0.1:8888/.env",
+        "method": "GET",
+        "headers": {}
+      },
+      "response_data": {
+        "status": 200,
+        "preview": "\n    APP_ENV=production\n    APP_KEY=base64:u3n45928374982374982374=\n    DB_CONNECTION=mysql\n    DB_HOST=127.0.0.1\n    DB_PORT=3306\n    DB_DATABASE=corp_production\n    DB_USERNAME=root\n    DB_PASSWORD=SuperSecretPassw0rd!123\n    AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\n    AWS_SECRET_ACCESS_KEY=wJalrXU"
+      },
+      "remediation": "Restrict web server access to .env files and place sensitive environment configs outside the web root.",
+      "references": [
+        "https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure"
+      ],
+      "status": "OPEN",
+      "check_source": "nuclei",
+      "template_id": "exposed-env-secrets",
+      "discovered_at": "2026-10-02 17:46:21.750126"
+    },
+    {
+      "id": "62b3ca4f-0648-4330-99e5-1aff6b1ae213",
+      "title": "Swagger / OpenAPI UI & Schema Public Exposure",
+      "severity": "LOW",
+      "category": "Nuclei Security Check",
+      "cwe_id": null,
+      "cvss_score": 3.2,
+      "endpoint": "http://127.0.0.1:8888/openapi.json",
+      "method": "GET",
+      "parameter": null,
+      "description": "Detects publicly exposed Swagger UI or OpenAPI documentation that may disclose internal endpoints and schemas.",
+      "evidence": "[Nuclei Match] Template: swagger-api-exposed\nTarget: GET http://127.0.0.1:8888/openapi.json\nHTTP Response Status: 200\nMatch Evidence:\nMatched words in body: ['\"openapi\":']\nStatus 200 in [200]",
+      "request_data": {
+        "url": "http://127.0.0.1:8888/openapi.json",
+        "method": "GET",
+        "headers": {}
+      },
+      "response_data": {
+        "status": 200,
+        "preview": "{\"openapi\":\"3.1.0\",\"info\":{\"title\":\"Vulnerable Demo Target API\",\"description\":\"Intentional testbed demonstrating OWASP Top 10 web & API security flaws.\",\"version\":\"1.0.0\"},\"paths\":{\"/\":{\"get\":{\"summary\":\"Index\",\"operationId\":\"index__get\",\"responses\":{\"200\":{\"description\":\"Successful Response\",\"conte"
+      },
+      "remediation": "Restrict OpenAPI docs and Swagger UI behind authentication or internal VPN access.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/200.html"
+      ],
+      "status": "OPEN",
+      "check_source": "nuclei",
+      "template_id": "swagger-api-exposed",
+      "discovered_at": "2026-10-02 17:46:21.757099"
+    },
+    {
+      "id": "78a2e2d9-6cb9-4b75-9534-7b7a3614646a",
+      "title": "Swagger / OpenAPI UI & Schema Public Exposure",
+      "severity": "LOW",
+      "category": "Nuclei Security Check",
+      "cwe_id": null,
+      "cvss_score": 3.2,
+      "endpoint": "http://127.0.0.1:8888/docs",
+      "method": "GET",
+      "parameter": null,
+      "description": "Detects publicly exposed Swagger UI or OpenAPI documentation that may disclose internal endpoints and schemas.",
+      "evidence": "[Nuclei Match] Template: swagger-api-exposed\nTarget: GET http://127.0.0.1:8888/docs\nHTTP Response Status: 200\nMatch Evidence:\nMatched words in body: ['swagger-ui']\nStatus 200 in [200]",
+      "request_data": {
+        "url": "http://127.0.0.1:8888/docs",
+        "method": "GET",
+        "headers": {}
+      },
+      "response_data": {
+        "status": 200,
+        "preview": "\n    <!DOCTYPE html>\n    <html>\n    <head>\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <link type=\"text/css\" rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css\">\n    <link rel=\"shortcut icon\" href=\"https://fastapi.tiangolo.com/img/"
+      },
+      "remediation": "Restrict OpenAPI docs and Swagger UI behind authentication or internal VPN access.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/200.html"
+      ],
+      "status": "OPEN",
+      "check_source": "nuclei",
+      "template_id": "swagger-api-exposed",
+      "discovered_at": "2026-10-02 17:46:21.759824"
+    }
+  ],
+  "endpoints": [
+    {
+      "url": "http://127.0.0.1:8888/",
+      "method": "GET",
+      "content_type": null,
+      "status_code": null,
+      "parameters": [],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080849"
+    },
+    {
+      "url": "http://127.0.0.1:8888/search",
+      "method": "GET",
+      "content_type": null,
+      "status_code": 200,
+      "parameters": [
+        "q"
+      ],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080871"
+    },
+    {
+      "url": "http://127.0.0.1:8888/api/users",
+      "method": "GET",
+      "content_type": null,
+      "status_code": 200,
+      "parameters": [
+        "id"
+      ],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080881"
+    },
+    {
+      "url": "http://127.0.0.1:8888/api/users/{user_id}",
+      "method": "GET",
+      "content_type": null,
+      "status_code": null,
+      "parameters": [
+        "user_id"
+      ],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080889"
+    },
+    {
+      "url": "http://127.0.0.1:8888/.env",
+      "method": "GET",
+      "content_type": null,
+      "status_code": null,
+      "parameters": [],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080895"
+    },
+    {
+      "url": "http://127.0.0.1:8888/.git/config",
+      "method": "GET",
+      "content_type": null,
+      "status_code": null,
+      "parameters": [],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080903"
+    },
+    {
+      "url": "http://127.0.0.1:8888/actuator/env",
+      "method": "GET",
+      "content_type": null,
+      "status_code": null,
+      "parameters": [],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080911"
+    },
+    {
+      "url": "http://127.0.0.1:8888/redirect",
+      "method": "GET",
+      "content_type": null,
+      "status_code": 200,
+      "parameters": [
+        "url"
+      ],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080918"
+    },
+    {
+      "url": "http://127.0.0.1:8888/view",
+      "method": "GET",
+      "content_type": null,
+      "status_code": 200,
+      "parameters": [
+        "file"
+      ],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080923"
+    },
+    {
+      "url": "http://127.0.0.1:8888/api/secret-data",
+      "method": "GET",
+      "content_type": null,
+      "status_code": null,
+      "parameters": [],
+      "source": "openapi",
+      "discovered_at": "2026-10-02 17:46:21.080929"
+    },
+    {
+      "url": "http://127.0.0.1:8888",
+      "method": "GET",
+      "content_type": "text/html; charset=utf-8",
+      "status_code": 200,
+      "parameters": [],
+      "source": "crawler",
+      "discovered_at": "2026-10-02 17:46:21.099466"
+    },
+    {
+      "url": "http://127.0.0.1:8888/login",
+      "method": "POST",
+      "content_type": null,
+      "status_code": null,
+      "parameters": [
+        "username",
+        "password"
+      ],
+      "source": "form",
+      "discovered_at": "2026-10-02 17:46:21.100356"
+    },
+    {
+      "url": "http://127.0.0.1:8888/api/users/1",
+      "method": "GET",
+      "content_type": "application/json",
+      "status_code": 200,
+      "parameters": [],
+      "source": "crawler",
+      "discovered_at": "2026-10-02 17:46:21.106790"
+    }
+  ]
+}

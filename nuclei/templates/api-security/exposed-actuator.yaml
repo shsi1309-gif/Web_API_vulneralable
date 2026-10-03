@@ -1,0 +1,29 @@
+id: exposed-actuator-endpoints
+info:
+  name: Spring Boot Actuator Endpoints Exposure
+  author: security-team
+  severity: critical
+  description: Detects unauthenticated exposure of Spring Boot Actuator management endpoints (/actuator/env, /actuator/heapdump).
+  reference:
+    - https://cwe.mitre.org/data/definitions/200.html
+  tags: api,actuator,spring,misconfiguration
+  remediation: Enforce strict authentication on all actuator endpoints and disable sensitive endpoints in production.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/actuator/env"
+      - "{{BaseURL}}/actuator"
+      - "{{BaseURL}}/actuator/mappings"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "propertySources"
+          - "systemProperties"
+          - "_links"
+        condition: or
+      - type: status
+        status:
+          - 200

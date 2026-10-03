@@ -1,0 +1,27 @@
+id: cors-origin-reflection
+info:
+  name: CORS Arbitrary Origin Reflection & Credentials Exposure
+  author: security-team
+  severity: high
+  description: Tests whether the server reflects untrusted origin headers with Access-Control-Allow-Credentials true.
+  reference:
+    - https://portswigger.net/web-security/cors
+  tags: cors,config,owasp-top-10
+  remediation: Implement an explicit origin whitelist instead of reflecting requested origins.
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+      - "{{BaseURL}}/api/users"
+      - "{{BaseURL}}/api/me"
+    headers:
+      Origin: "https://evil-attacker.com"
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: header
+        words:
+          - "Access-Control-Allow-Origin: https://evil-attacker.com"
+          - "access-control-allow-origin: https://evil-attacker.com"
+        condition: or
